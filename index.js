@@ -18,8 +18,8 @@ function ProgressBar(opts){
 
     $.extend(this, opts);
         
-    if (this.exPlayQueue){
-        this.audio = this.exPlayQueue.audio;
+    if(this.playQueue){
+        this.audio = this.playQueue.audio;
     }
     
     // boolean if user is seeking or not
@@ -32,56 +32,85 @@ function ProgressBar(opts){
 
 // add listeners
 ProgressBar.prototype.addListeners = function(){
-    if (this.back){
-        $(this.back).bind("click", $.proxy(this, "click"));
+    if(this.back){
+        $(this.back).bind(
+            'click', 
+            $.proxy(this, 'click')
+        );
     }
-    if (this.front){
-        $(this.front).bind("click", $.proxy(this, "click"));
+    if(this.front){
+        $(this.front).bind(
+            'click', 
+            $.proxy(this, 'click'
+        ));
     }
-    if (this.thumb){
-        $(this.thumb).bind("mousedown", $.proxy(this, "mouseDown"));
-        $(this.thumb).bind("mouseup", $.proxy(this, "mouseUp"));
+    if(this.thumb){
+        $(this.thumb).bind(
+            'mousedown', 
+            $.proxy(this, 'mouseDown')
+        );
+        $(this.thumb).bind(
+            'mouseup', 
+            $.proxy(this, 'mouseUp')
+        );
     }
-    if (this.exPlayQueue){
-        this.exPlayQueue.addEventListener(
-            "loading", 
+    if(this.playQueue){
+        this.playQueue.addEventListener(
+            'loading', 
             this.onLoading.bind(this), 
             false
         );
-        this.exPlayQueue.addEventListener(
-            "playing", 
+        this.playQueue.addEventListener(
+            'playing', 
             this.onPlaying.bind(this), 
             false
         );
     }
-    if (this.audio){
+    else{
+        if(this.audio){
+            this.audio.addEventListener(
+                'loadstart', 
+                this.onLoading.bind(this), 
+                false
+            );
+            this.audio.addEventListener(
+                'canplay', 
+                this.onPlaying.bind(this), 
+                false
+            );
+        }
+    }
+    if(this.audio){
         this.audio.addEventListener(
-            "timeupdate", 
+            'timeupdate', 
             this.onTimeUpdate.bind(this), 
             false
         );
         this.audio.addEventListener(
-            "durationchange", 
+            'durationchange', 
             this.onDurationChange.bind(this), 
             false
         );
         this.audio.addEventListener(
-            "seeking", 
+            'seeking', 
             this.onSeeking.bind(this), 
             false
         );
         this.audio.addEventListener(
-            "seeked", 
+            'seeked', 
             this.onSeeked.bind(this), 
             false
         );
     }
-    $(window).bind("resize", $.proxy(this, "setSizes"));
+    $(window).bind(
+        'resize', 
+        $.proxy(this, 'setSizes')
+    );
 }
 
 // calculate widths
 ProgressBar.prototype.setSizes = function(){
-    if (this.back){
+    if(this.back){
         this.width = $(this.back).width();
         this.left = $(this.back).offset().left;
         this.right = this.left + this.width;
@@ -91,9 +120,9 @@ ProgressBar.prototype.setSizes = function(){
 // reset everything to default 
 ProgressBar.prototype.reset = function(){
     $(this.thumb).addClass(this.hideClass);
-    $(this.thumb).css("left", this.thumbLeftStart);
+    $(this.thumb).css('left', this.thumbLeftStart);
     $(this.front).addClass(this.hideClass);
-    $(this.front).css("width", 0);
+    $(this.front).css('width', 0);
     $(this.count).text("0:00");
     $(this.duration).text("0:00");
 }
@@ -114,24 +143,24 @@ ProgressBar.prototype.onPlaying = function(e){
 // onTimeUpdate event. Update count and duration. Set width on front. Move thumb.
 ProgressBar.prototype.onTimeUpdate = function(e){
     $(this.count).text(Utils.MMSS(Math.floor(e.target.currentTime)));
-    if (!isNaN(e.target.duration)){
+    if(!isNaN(e.target.duration)){
         $(this.duration).text(Utils.MMSS(Math.floor(e.target.duration)));
     } 
     else{
         $(this.duration).text('...');
     } 
     var percentage = e.target.currentTime / e.target.duration;
-    if (this.isSeeking == false) {
-     if ((this.width * percentage) > 0){
-         $(this.thumb).css("left", this.width * percentage +this.thumbLeftStart);
+    if(this.isSeeking == false) {
+     if((this.width * percentage) > 0){
+        $(this.thumb).css('left', this.width * percentage +this.thumbLeftStart);
      }
-     $(this.front).css("width", this.width * percentage + this.frontLeftStart);
+     $(this.front).css('width', this.width * percentage + this.frontLeftStart);
     }
 }
 
 // onDurationChange event. Update duration. 
 ProgressBar.prototype.onDurationChange = function(e){
-    if (!isNaN(e.target.duration)){
+    if(!isNaN(e.target.duration)){
         $(this.duration).text(Utils.MMSS(Math.floor(e.target.duration)));
     }
 }
@@ -148,8 +177,14 @@ ProgressBar.prototype.onSeeked = function(e){
 
 // mouseDown on thumb listener
 ProgressBar.prototype.mouseDown = function(e){
-    $(document).bind("mousemove", $.proxy(this, "mouseMove"));
-    $(document).bind("mouseup", $.proxy(this, "mouseUp"));
+    $(document).bind(
+        'mousemove', 
+        $.proxy(this, 'mouseMove')
+    );
+    $(document).bind(
+        'mouseup', 
+        $.proxy(this, 'mouseUp')
+    );
     this.isSeeking = true;
     e.preventDefault();
 }
@@ -157,10 +192,10 @@ ProgressBar.prototype.mouseDown = function(e){
 // mouseMove on thumb listener
 ProgressBar.prototype.mouseMove = function(e){
     var x = e.clientX;
-    if (x < this.left){
+    if(x < this.left){
         x = this.left;
     }
-    if (x > this.right){
+    if(x > this.right){
         x = this.right;
     }
     this.seekLeft = x - this.left;
@@ -170,8 +205,14 @@ ProgressBar.prototype.mouseMove = function(e){
 
 // mouseUp on thumb listener
 ProgressBar.prototype.mouseUp = function(e){
-    $(document).unbind("mousemove", $.proxy(this, "mouseMove"));
-    $(document).unbind("mouseup", $.proxy(this, "mouseUp"));
+    $(document).unbind(
+        'mousemove', 
+        $.proxy(this, 'mouseMove')
+    );
+    $(document).unbind(
+        'mouseup', 
+        $.proxy(this, 'mouseUp')
+    );
     this.isSeeking = false;
     var percentage = this.seekLeft / this.width;
     $(this).trigger(
@@ -180,8 +221,8 @@ ProgressBar.prototype.mouseUp = function(e){
             'percentage': percentage
         }
     );
-    if (this.exPlayQueue){
-        this.exPlayQueue.seek(percentage);
+    if(this.playQueue){
+        this.playQueue.seek(percentage);
     }
 }
 
@@ -195,8 +236,8 @@ ProgressBar.prototype.click = function(e){
             'percentage': percentage
         }
     );
-    if (this.exPlayQueue){
-        this.exPlayQueue.seek(percentage);
+    if(this.playQueue){
+        this.playQueue.seek(percentage);
     }
 }
 
@@ -205,7 +246,7 @@ if(typeof module !== "undefined"){
     module.exports = ProgressBar;
 }
 else{
-    window.TouchElement = ProgressBar;
+    window.ProgressBar = ProgressBar;
 }
 
 }()); // end wrapper
