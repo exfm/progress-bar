@@ -7,12 +7,6 @@ function ProgressBar(opts){
     // class added to hide elements
     this.hideClass = 'display_none';
     
-    // pixel offset to reset thumb position
-    this.thumbLeftStart = 25;
-    
-    // pixel offset when moving thumb
-    this.frontLeftStart = 3;
-    
     // css class to add to progress bar when in loading state
     this.loadingClass = "loading";
 
@@ -127,7 +121,7 @@ ProgressBar.prototype.setSizes = function(){
 // reset everything to default 
 ProgressBar.prototype.reset = function(){
     $(this.thumb).addClass(this.hideClass);
-    $(this.thumb).css('left', this.thumbLeftStart);
+    $(this.thumb).css('left', 0);
     $(this.front).addClass(this.hideClass);
     $(this.front).css('width', 0);
     $(this.count).text("0:00");
@@ -159,9 +153,9 @@ ProgressBar.prototype.onTimeUpdate = function(e){
     var percentage = e.target.currentTime / e.target.duration;
     if(this.isSeeking == false) {
         if((this.width * percentage) > 0){
-            $(this.thumb).css('left', this.width * percentage +this.thumbLeftStart);
+            $(this.thumb).css('left', this.width * percentage);
         }
-        $(this.front).css('width', this.width * percentage + this.frontLeftStart);
+        $(this.front).css('width', this.width * percentage);
     }
 }
 
@@ -185,7 +179,7 @@ ProgressBar.prototype.onSeeked = function(e){
 // onProgress event, fired when media is loading
 ProgressBar.prototype.onProgress = function(e){
     var percentage = e.target.buffered.end / e.target.duration;
-    $(this.loadingProgress).css('width', this.width * percentage + this.frontLeftStart);
+    $(this.loadingProgress).css('width', this.width * percentage);
 }
 
 // mouseDown on thumb listener
@@ -212,8 +206,8 @@ ProgressBar.prototype.mouseMove = function(e){
         x = this.right;
     }
     this.seekLeft = x - this.left;
-    $(this.thumb).css("left", this.seekLeft + this.thumbLeftStart);
-    $(this.front).css("width", this.seekLeft + this.frontLeftStart);
+    $(this.thumb).css("left", this.seekLeft);
+    $(this.front).css("width", this.seekLeft);
 }
 
 // mouseUp on thumb listener
