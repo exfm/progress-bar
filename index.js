@@ -101,6 +101,13 @@ ProgressBar.prototype.addListeners = function(){
             this.onSeeked.bind(this), 
             false
         );
+        if(this.loadingProgress){
+            this.audio.addEventListener(
+                'progress', 
+                this.onProgress.bind(this), 
+                false
+            );
+        }
     }
     $(window).bind(
         'resize', 
@@ -173,6 +180,13 @@ ProgressBar.prototype.onSeeking = function(e){
 // onSeeked event, remove loading class to back
 ProgressBar.prototype.onSeeked = function(e){
     $(this.back).removeClass(this.loadingClass);
+}
+
+// onProgress event, fired when media is loading
+ProgressBar.prototype.onProgress = function(e){
+    console.log('progress: '+e);
+    var percentage = e.ranges.duration / e.target.duration;
+    $(this.loadingProgress).css('width', this.width * percentage + this.frontLeftStart);
 }
 
 // mouseDown on thumb listener
