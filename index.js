@@ -184,8 +184,7 @@ ProgressBar.prototype.onSeeked = function(e){
 
 // onProgress event, fired when media is loading
 ProgressBar.prototype.onProgress = function(e){
-    console.log('progress: '+e);
-    var percentage = e.ranges.duration / e.target.duration;
+    var percentage = e.target.buffered.end / e.target.duration;
     $(this.loadingProgress).css('width', this.width * percentage + this.frontLeftStart);
 }
 
