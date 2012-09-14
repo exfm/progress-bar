@@ -126,6 +126,7 @@ ProgressBar.prototype.reset = function(){
     $(this.front).css('width', 0);
     $(this.count).text("0:00");
     $(this.duration).text("0:00");
+    $(this.loadingProgress).css('width', 0);
 }
 
 // onLoading event, reset times, reset thumb and front, add loading class to back
