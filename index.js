@@ -223,29 +223,27 @@ ProgressBar.prototype.mouseUp = function(e){
     );
     this.isSeeking = false;
     var percentage = this.seekLeft / this.width;
-    $(this).trigger(
-        {
-            'type': "seek", 
-            'percentage': percentage
-        }
-    );
-    if(this.playQueue){
-        this.playQueue.seek(percentage);
-    }
+    this.seek(percentage);
 }
 
 // click on front and back listener
 ProgressBar.prototype.click = function(e){
     this.mouseMove(e);
     var percentage = this.seekLeft / this.width;
-    $(this).trigger(
-        {
-            'type': "seek", 
-            'percentage': percentage
-        }
-    );
+    this.seek(percentage);
+}
+
+// user seeked. Call playQueue or audio directly
+ProgressBar.prototype.seek = function(percentage){
     if(this.playQueue){
         this.playQueue.seek(percentage);
+    }
+    else{
+        if(this.audio){
+            if (!isNaN(this.audio.duration)){
+                this.audio.currentTime = Math.floor(percentage * this.audio.duration);
+            }
+        }
     }
 }
 
