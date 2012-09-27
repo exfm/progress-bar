@@ -27,85 +27,160 @@ function ProgressBar(opts){
 // add listeners
 ProgressBar.prototype.addListeners = function(){
     if(this.back){
+        this.bindedBackClick = $.proxy(this, 'click');
         $(this.back).bind(
             'click', 
-            $.proxy(this, 'click')
+            this.bindedBackClick
         );
     }
     if(this.front){
+        this.bindedFrontClick = $.proxy(this, 'click');
         $(this.front).bind(
             'click', 
-            $.proxy(this, 'click'
-        ));
+            this.bindedFrontClick
+        );
     }
     if(this.thumb){
+        this.bindedThumbDown = $.proxy(this, 'mouseDown');
         $(this.thumb).bind(
             'mousedown', 
-            $.proxy(this, 'mouseDown')
+            this.bindedThumbDown
         );
+        this.bindedThumbUp = $.proxy(this, 'mouseUp');
         $(this.thumb).bind(
             'mouseup', 
-            $.proxy(this, 'mouseUp')
+            this.bindedThumbUp
         );
     }
     if(this.playQueue){
+        this.bindedPlayQueueLoading = this.onLoading.bind(this);
         this.playQueue.addEventListener(
             'loading', 
-            this.onLoading.bind(this), 
+            this.bindedPlayQueueLoading, 
             false
         );
+        this.bindedPlayQueuePlaying = this.onPlaying.bind(this);
         this.playQueue.addEventListener(
             'playing', 
-            this.onPlaying.bind(this), 
+            this.bindedPlayQueuePlaying, 
             false
         );
     }
     else{
         if(this.audio){
+            this.bindedAudioLoading = this.onLoading.bind(this);
             this.audio.addEventListener(
                 'loadstart', 
-                this.onLoading.bind(this), 
+                this.bindedAudioLoading, 
                 false
             );
+            this.bindedAudioPlaying = this.onPlaying.bind(this);
             this.audio.addEventListener(
                 'canplay', 
-                this.onPlaying.bind(this), 
+                this.bindedAudioPlaying, 
                 false
             );
         }
     }
     if(this.audio){
+        this.bindedTimeUpdate = this.onTimeUpdate.bind(this);
         this.audio.addEventListener(
             'timeupdate', 
-            this.onTimeUpdate.bind(this), 
+            this.bindedTimeUpdate, 
             false
         );
+        this.bindedDurationChange = this.onDurationChange.bind(this);
         this.audio.addEventListener(
             'durationchange', 
-            this.onDurationChange.bind(this), 
+            this.bindedDurationChange, 
             false
         );
+        this.bindedSeeking = this.onSeeking.bind(this);
         this.audio.addEventListener(
             'seeking', 
-            this.onSeeking.bind(this), 
+            this.bindedSeeking, 
             false
         );
+        this.bindedSeeked = this.onSeeked.bind(this);
         this.audio.addEventListener(
             'seeked', 
-            this.onSeeked.bind(this), 
+            this.bindedSeeked, 
             false
         );
+        this.bindedProgress = this.onProgress.bind(this);
         if(this.loadingProgress){
             this.audio.addEventListener(
                 'progress', 
-                this.onProgress.bind(this), 
+                this.bindedProgress, 
                 false
             );
         }
     }
+    this.bindedSetSizes = $.proxy(this, 'setSizes');
     $(window).bind(
         'resize', 
-        $.proxy(this, 'setSizes')
+        this.bindedSetSizes
+    );
+}
+
+
+// remove all listeners
+ProgressBar.prototype.removeListeners = function(){
+    $(this.back).unbind(
+        'click', 
+        this.bindedBackClick
+    );
+    $(this.front).unbind(
+        'click', 
+        this.bindedFrontClick
+    );
+    $(this.thumb).unbind(
+        'mousedown', 
+        this.bindedThumbDown
+    );
+    $(this.thumb).unbind(
+        'mouseup', 
+        this.bindedThumbUp
+    );
+    this.playQueue.removeEventListener(
+        'loading', 
+        this.bindedPlayQueueLoading
+    );
+    this.playQueue.removeEventListener(
+        'playing', 
+        this.bindedPlayQueuePlaying
+    );
+    this.audio.removeEventListener(
+        'loadstart', 
+        this.bindedAudioLoading 
+    );
+    this.audio.removeEventListener(
+        'canplay', 
+        this.bindedAudioPlaying
+    );
+    this.audio.removeEventListener(
+        'timeupdate', 
+        this.bindedTimeUpdate
+    );
+    this.audio.removeEventListener(
+        'durationchange', 
+        this.bindedDurationChange
+    );
+    this.audio.removeEventListener(
+        'seeking', 
+        this.bindedSeeking
+    );
+    this.audio.removeEventListener(
+        'seeked', 
+        this.bindedSeeked 
+    );
+    this.audio.removeEventListener(
+        'progress', 
+        this.bindedProgress 
+    );
+    $(window).unbind(
+        'resize', 
+        this.bindedSetSizes
     );
 }
 
