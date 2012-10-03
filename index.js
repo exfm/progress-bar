@@ -26,6 +26,7 @@ function ProgressBar(opts){
 
 // add listeners
 ProgressBar.prototype.addListeners = function(){
+    this.removeListeners();
     if(this.back){
         this.bindedBackClick = $.proxy(this, 'click');
         $(this.back).bind(
