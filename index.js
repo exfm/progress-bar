@@ -220,20 +220,7 @@ ProgressBar.prototype.onPlaying = function(e){
 
 // onTimeUpdate event. Update count and duration. Set width on front. Move thumb.
 ProgressBar.prototype.onTimeUpdate = function(e){
-    $(this.count).text(this.getMMSS(Math.floor(e.target.currentTime)));
-    if(!isNaN(e.target.duration)){
-        $(this.duration).text(this.getMMSS(Math.floor(e.target.duration)));
-    } 
-    else{
-        $(this.duration).text('...');
-    } 
-    var percentage = e.target.currentTime / e.target.duration;
-    if(this.isSeeking == false) {
-        if((this.width * percentage) > 0){
-            $(this.thumb).css('left', this.width * percentage);
-        }
-        $(this.front).css('width', this.width * percentage);
-    }
+    this.setPosition(e.target);
 }
 
 // onDurationChange event. Update duration. 
@@ -330,6 +317,29 @@ ProgressBar.prototype.getMMSS = function (secs) {
         s = "0" + s;
     }
     return Math.floor(secs/60) + ":" + s;
+}
+
+// set positions and time
+ProgressBar.prototype.setPosition = function(audio){
+    $(this.count).text(this.getMMSS(Math.floor(audio.currentTime)));
+    if(!isNaN(audio.duration)){
+        $(this.duration).text(this.getMMSS(Math.floor(audio.duration)));
+    } 
+    else{
+        $(this.duration).text('...');
+    } 
+    var percentage = audio.currentTime / audio.duration;
+    if(this.isSeeking == false) {
+        if((this.width * percentage) > 0){
+            $(this.thumb).css('left', this.width * percentage);
+        }
+        $(this.front).css('width', this.width * percentage);
+    }
+}
+
+// manually call this to update position 
+ProgressBar.prototype.update = function(){
+    this.setPosition(this.audio);
 }
 
 // check if we've got require
