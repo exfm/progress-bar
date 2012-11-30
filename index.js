@@ -197,12 +197,14 @@ ProgressBar.prototype.setSizes = function(){
 // reset everything to default 
 ProgressBar.prototype.reset = function(){
     $(this.thumb).addClass(this.hideClass);
-    $(this.thumb).css('left', 0);
     $(this.front).addClass(this.hideClass);
-    $(this.front).css('width', 0);
-    $(this.count).text("0:00");
-    $(this.duration).text("0:00");
-    $(this.loadingProgress).css('width', 0);
+    this.currentTimeText = "0:00";
+    this.durationText = "0:00"; 
+    this.thumbLeft = 0;
+    this.frontWidth = 0;
+    this.percentageWidth = 0;
+    this.requestTick();
+    
 }
 
 // onLoading event, reset times, reset thumb and front, add loading class to back
@@ -225,9 +227,8 @@ ProgressBar.prototype.onTimeUpdate = function(e){
 
 // onDurationChange event. Update duration. 
 ProgressBar.prototype.onDurationChange = function(e){
-    if(!isNaN(e.target.duration)){
-        $(this.duration).text(this.getMMSS(Math.floor(e.target.duration)));
-    }
+    this.durationText = this.getMMSS(Math.floor(e.target.duration)); 
+    this.requestTick();
 }
 
 // onSeeking event, add loading class to back
@@ -242,8 +243,8 @@ ProgressBar.prototype.onSeeked = function(e){
 
 // onProgress event, fired when media is loading
 ProgressBar.prototype.onProgress = function(e){
-    var percentage = e.target.buffered.end / e.target.duration;
-    $(this.loadingProgress).css('width', this.width * percentage);
+    this.percentageWidth = this.width * e.target.buffered.end / e.target.duration;
+    this.requestTick();
 }
 
 // mouseDown on thumb listener
@@ -321,26 +322,46 @@ ProgressBar.prototype.getMMSS = function (secs) {
 
 // set positions and time
 ProgressBar.prototype.setPosition = function(audio){
-    $(this.count).text(this.getMMSS(Math.floor(audio.currentTime)));
+    this.currentTimeText = this.getMMSS(Math.floor(audio.currentTime));
     if(!isNaN(audio.duration)){
-        $(this.duration).text(this.getMMSS(Math.floor(audio.duration)));
+        this.durationText = this.getMMSS(Math.floor(audio.duration));
     } 
     else{
-        $(this.duration).text('...');
+        this.durationText = '...';
     } 
     var percentage = audio.currentTime / audio.duration;
     if(this.isSeeking == false) {
         if((this.width * percentage) > 0){
-            $(this.thumb).css('left', this.width * percentage);
+            this.thumbLeft = this.width * percentage;
         }
-        $(this.front).css('width', this.width * percentage);
+        this.frontWidth = this.width * percentage;
     }
+    this.requestTick();
 }
 
 // manually call this to update position 
 ProgressBar.prototype.update = function(){
     this.setPosition(this.audio);
 }
+
+// request animation frame
+ProgressBar.prototype.requestTick = function() {
+    if(!this.ticking) {
+		webkitRequestAnimationFrame($.proxy(this.draw, this));
+	}
+	this.ticking = true;
+}
+
+// draw the dom changes
+ProgressBar.prototype.draw = function() {
+    this.ticking = false;
+    $(this.count).text(this.currentTimeText);
+    $(this.duration).text(this.durationText);
+    $(this.thumb).css('left', this.thumbLeft);
+    $(this.front).css('width', this.frontWidth);
+    $(this.loadingProgress).css('width', this.percentageWidth);
+}
+
 
 // check if we've got require
 if(typeof module !== "undefined"){
