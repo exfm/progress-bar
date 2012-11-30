@@ -203,8 +203,7 @@ ProgressBar.prototype.reset = function(){
     this.thumbLeft = 0;
     this.frontWidth = 0;
     this.percentageWidth = 0;
-    this.requestTick();
-    
+    this.requestAnimationFrame(this.draw);
 }
 
 // onLoading event, reset times, reset thumb and front, add loading class to back
@@ -228,7 +227,7 @@ ProgressBar.prototype.onTimeUpdate = function(e){
 // onDurationChange event. Update duration. 
 ProgressBar.prototype.onDurationChange = function(e){
     this.durationText = this.getMMSS(Math.floor(e.target.duration)); 
-    this.requestTick();
+    this.requestAnimationFrame(this.draw);
 }
 
 // onSeeking event, add loading class to back
@@ -244,7 +243,7 @@ ProgressBar.prototype.onSeeked = function(e){
 // onProgress event, fired when media is loading
 ProgressBar.prototype.onProgress = function(e){
     this.percentageWidth = this.width * e.target.buffered.end / e.target.duration;
-    this.requestTick();
+    this.requestAnimationFrame(this.draw);
 }
 
 // mouseDown on thumb listener
@@ -336,20 +335,12 @@ ProgressBar.prototype.setPosition = function(audio){
         }
         this.frontWidth = this.width * percentage;
     }
-    this.requestTick();
+    this.requestAnimationFrame(this.draw);
 }
 
 // manually call this to update position 
 ProgressBar.prototype.update = function(){
     this.setPosition(this.audio);
-}
-
-// request animation frame
-ProgressBar.prototype.requestTick = function() {
-    if(!this.ticking) {
-		webkitRequestAnimationFrame($.proxy(this.draw, this));
-	}
-	this.ticking = true;
 }
 
 // draw the dom changes
@@ -360,6 +351,19 @@ ProgressBar.prototype.draw = function() {
     $(this.thumb).css('left', this.thumbLeft);
     $(this.front).css('width', this.frontWidth);
     $(this.loadingProgress).css('width', this.percentageWidth);
+}
+
+// only use rAF if we've got it
+ProgressBar.prototype.requestAnimationFrame = function(func){
+    var rAF = window.requestAnimationFrame || 
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame;
+    if(rAF){
+        rAF($.proxy(func, this));
+    }
+    else{
+        func.call(this);
+    }
 }
 
 
