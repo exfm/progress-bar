@@ -201,8 +201,8 @@ ProgressBar.prototype.reset = function(){
     this.currentTimeText = "0:00";
     this.durationText = "0:00"; 
     this.thumbLeft = 0;
-    this.frontWidth = 0;
-    this.percentageWidth = 0;
+    this.frontWidth = -100;
+    this.percentageWidth = -100;
     this.requestAnimationFrame(this.draw);
 }
 
@@ -242,7 +242,7 @@ ProgressBar.prototype.onSeeked = function(e){
 
 // onProgress event, fired when media is loading
 ProgressBar.prototype.onProgress = function(e){
-    this.percentageWidth = this.width * e.target.buffered.end / e.target.duration;
+    this.percentageWidth = (100 * (e.target.buffered.end / e.target.duration)) - 100;
     this.requestAnimationFrame(this.draw);
 }
 
@@ -270,8 +270,8 @@ ProgressBar.prototype.mouseMove = function(e){
         x = this.right;
     }
     this.seekLeft = x - this.left;
-    $(this.thumb).css("left", this.seekLeft);
-    $(this.front).css("width", this.seekLeft);
+    //$(this.thumb).css("left", this.seekLeft);
+    //$(this.front).css("width", this.seekLeft);
 }
 
 // mouseUp on thumb listener
@@ -333,7 +333,7 @@ ProgressBar.prototype.setPosition = function(audio){
         if((this.width * percentage) > 0){
             this.thumbLeft = this.width * percentage;
         }
-        this.frontWidth = this.width * percentage;
+        this.frontWidth = (100 * percentage) - 100;
     }
     this.requestAnimationFrame(this.draw);
 }
@@ -345,12 +345,13 @@ ProgressBar.prototype.update = function(){
 
 // draw the dom changes
 ProgressBar.prototype.draw = function() {
-    this.ticking = false;
     $(this.count).text(this.currentTimeText);
     $(this.duration).text(this.durationText);
-    $(this.thumb).css('left', this.thumbLeft);
-    $(this.front).css('width', this.frontWidth);
-    $(this.loadingProgress).css('width', this.percentageWidth);
+    $(this.front).css('-webkit-transform', 'translateX('+this.frontWidth+'%)');
+    $(this.loadingProgress).css('-webkit-transform', 'translateX('+this.percentageWidth+'%)');
+    if(this.thumb){
+        $(this.thumb).css('left', this.thumbLeft);
+    };
 }
 
 // only use rAF if we've got it
