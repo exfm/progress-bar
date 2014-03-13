@@ -143,14 +143,16 @@ ProgressBar.prototype.removeListeners = function(){
         'mouseup', 
         this.bindedThumbUp
     );
-    this.playQueue.removeEventListener(
-        'loading', 
-        this.bindedPlayQueueLoading
-    );
-    this.playQueue.removeEventListener(
-        'playing', 
-        this.bindedPlayQueuePlaying
-    );
+    if(this.playQueue){
+        this.playQueue.removeEventListener(
+            'loading', 
+            this.bindedPlayQueueLoading
+        );
+        this.playQueue.removeEventListener(
+            'playing', 
+            this.bindedPlayQueuePlaying
+        );
+    }
     this.audio.removeEventListener(
         'loadstart', 
         this.bindedAudioLoading 
@@ -201,7 +203,7 @@ ProgressBar.prototype.reset = function(){
     this.currentTimeText = "0:00";
     this.durationText = "0:00"; 
     this.thumbLeft = 0;
-    this.frontWidth = -100;
+    this.frontWidth = -101;
     this.percentageWidth = -100;
     this.requestAnimationFrame(this.draw);
 }
