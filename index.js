@@ -202,6 +202,7 @@ ProgressBar.prototype.reset = function(){
     $(this.front).addClass(this.hideClass);
     this.currentTimeText = "0:00";
     this.durationText = "0:00"; 
+    this.timeBreakText = "";
     this.thumbLeft = 0;
     this.frontWidth = -101;
     this.percentageWidth = -100;
@@ -212,6 +213,7 @@ ProgressBar.prototype.reset = function(){
 ProgressBar.prototype.onLoading = function(e){
     this.reset()
     $(this.back).addClass(this.loadingClass);
+    this.timeBreakText = "/";
 }
 
 // onPlaying event. show thumb and front, remove loading class from back 
@@ -349,6 +351,7 @@ ProgressBar.prototype.update = function(){
 ProgressBar.prototype.draw = function() {
     $(this.count).text(this.currentTimeText);
     $(this.duration).text(this.durationText);
+    $(this.timeBreak).text(this.timeBreakText);
     $(this.front).css('-webkit-transform', 'translateX('+this.frontWidth+'%)');
     $(this.loadingProgress).css('-webkit-transform', 'translateX('+this.percentageWidth+'%)');
     if(this.thumb){

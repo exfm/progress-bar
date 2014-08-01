@@ -7,7 +7,7 @@ loading indicator and seeking.
 
 ## Install
 
-    npm install progress-bar
+    npm install audio-progress-bar
 
 ## Testing
 
